@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Drift — Research Overview</title>
+<style>
+  :root{
+    --bg:#030014; --card:#120b2e; --card2:#1a1040;
+    --purple:#a855f7; --purple-lt:#c084fc; --indigo:#7c4dff;
+    --pink:#e040fb; --magenta:#9c27b0; --cyan:#00e5ff; --amber:#ffea00;
+    --text:#f1f0ff; --text2:#a5a0d0; --muted:#6b6394;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:"Segoe UI",system-ui,sans-serif; line-height:1.6;
+    padding:0 0 80px;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:0 28px}
+  header.hero{
+    text-align:center;padding:64px 28px 40px;
+    background:radial-gradient(ellipse at 50% 0%,#1a0b3d 0%,var(--bg) 70%);
+    border-bottom:1px solid #221546;
+  }
+  .hero .kicker{color:var(--pink);font-weight:700;letter-spacing:2px;font-size:13px}
+  .hero h1{font-size:42px;margin:14px 0 8px;
+    background:linear-gradient(90deg,var(--magenta),var(--cyan));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .hero .sub{color:var(--purple-lt);font-size:18px}
+  .pills{margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .pill{border:1px solid;border-radius:999px;padding:6px 18px;font-weight:700;font-size:14px}
+  .pill.m{border-color:var(--magenta);color:var(--magenta)}
+  .pill.d{border-color:var(--pink);color:var(--pink)}
+  .pill.r{border-color:var(--indigo);color:var(--indigo)}
+  .arrow{color:var(--cyan);font-weight:700;align-self:center}
+
+  section{margin-top:54px}
+  h2.sec{font-size:13px;letter-spacing:2px;color:var(--pink);font-weight:700;
+    border-left:4px solid;border-image:linear-gradient(var(--pink),var(--indigo)) 1;
+    padding-left:14px;text-transform:uppercase}
+  h2.sec small{display:block;color:var(--text);font-size:24px;letter-spacing:0;
+    margin-top:6px;text-transform:none}
+
+  /* RQ cards */
+  .rq{background:var(--card);border:1px solid;border-radius:14px;
+    padding:20px 24px;margin-top:18px;display:flex;gap:22px;align-items:flex-start}
+  .rq.m{border-color:var(--magenta)} .rq.d{border-color:var(--pink)} .rq.r{border-color:var(--indigo)}
+  .rq .tag{font-size:26px;font-weight:800;min-width:70px}
+  .rq.m .tag{color:var(--magenta)} .rq.d .tag{color:var(--pink)} .rq.r .tag{color:var(--indigo)}
+  .rq .thread{color:var(--muted);font-weight:700;font-size:12px;letter-spacing:1px;margin-bottom:4px}
+  .rq .q{font-size:16px;font-weight:600}
+  .rq .src{color:var(--cyan);font-style:italic;font-size:13px;margin-top:6px}
+  .editnote{color:var(--muted);font-style:italic;font-size:13px;margin-top:10px}
+
+  /* story */
+  .story{background:var(--card2);border:1px solid var(--indigo);border-radius:14px;
+    padding:26px 30px;margin-top:18px;counter-reset:s}
+  .story p{position:relative;padding-left:42px;margin:14px 0;font-size:17px}
+  .story p::before{counter-increment:s;content:counter(s);
+    position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+    background:linear-gradient(135deg,var(--magenta),var(--cyan));
+    color:#fff;font-weight:800;font-size:14px;display:grid;place-items:center}
+  .story p.punch{color:var(--cyan);font-weight:700;font-size:19px}
+
+  /* papers */
+  .paper{background:var(--card);border-radius:14px;margin-top:20px;overflow:hidden;
+    border:1px solid #2a1c52}
+  .paper .top{padding:16px 22px;border-left:6px solid}
+  .paper.m .top{border-color:var(--magenta)} .paper.d .top{border-color:var(--pink)} .paper.r .top{border-color:var(--indigo)}
+  .paper .letter{font-size:30px;font-weight:800;float:left;margin-right:14px;line-height:1}
+  .paper.m .letter{color:var(--magenta)} .paper.d .letter{color:var(--pink)} .paper.r .letter{color:var(--indigo)}
+  .paper .name{font-size:19px;font-weight:700}
+  .paper .venue{color:var(--muted);font-size:13px;font-style:italic}
+  .paper .one{padding:14px 22px;color:var(--text);font-size:15px;
+    background:var(--card2);border-top:1px solid #221546;border-bottom:1px solid #221546}
+  .zones{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+  .zone{padding:16px 18px;border-right:1px solid #221546}
+  .zone:last-child{border-right:none}
+  .zone h4{font-size:11px;letter-spacing:1px;margin-bottom:10px}
+  .zone.mo h4{color:var(--amber)} .zone.be h4{color:var(--purple-lt)}
+  .zone.ga h4{color:var(--pink)} .zone.us h4{color:var(--cyan)}
+  .zone ul{list-style:none;font-size:13px;color:var(--text2)}
+  .zone li{margin:6px 0;padding-left:16px;position:relative}
+  .zone li::before{position:absolute;left:0;font-weight:700}
+  .zone.ga li::before{content:"✕";color:var(--pink)}
+  .zone.us li::before{content:"✓";color:var(--cyan)}
+  .zone.mo li::before{content:"•";color:var(--amber)}
+  .zone.be li::before{content:"•";color:var(--purple-lt)}
+  .zone b{color:var(--text)}
+  .zone a{color:var(--cyan);text-decoration:none;border-bottom:1px dotted var(--cyan);word-break:break-all}
+  .zone a:hover{color:#fff;border-bottom-style:solid}
+  .ok{color:var(--cyan);font-weight:700} .no{color:var(--pink);font-weight:700}
+
+  .rqgroup{margin-top:30px}
+  .rqgroup .lbl{text-align:center;color:var(--muted);font-weight:700;
+    letter-spacing:2px;font-size:12px;margin:8px 0}
+  .note{background:#0d0726;border:1px dashed #3a2a6a;border-radius:12px;
+    padding:18px 22px;margin-top:40px;color:var(--text2);font-size:14px}
+  .note b{color:var(--amber)}
+  @media(max-width:820px){.zones{grid-template-columns:1fr 1fr}.zone:nth-child(2){border-right:none}}
+
+  html{scroll-behavior:smooth}
+  /* floating paper nav */
+  .pnav{position:fixed;right:18px;top:50%;transform:translateY(-50%);
+    display:flex;flex-direction:column;gap:10px;z-index:99}
+  .pnav .lbl{font-size:9px;letter-spacing:1px;color:var(--muted);text-align:center;margin-bottom:2px}
+  .pnav a{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;
+    font-weight:800;font-size:18px;text-decoration:none;border:2px solid;
+    background:rgba(18,11,46,.85);backdrop-filter:blur(4px);
+    transition:transform .15s,box-shadow .15s}
+  .pnav a.m{border-color:var(--magenta);color:var(--magenta)}
+  .pnav a.d{border-color:var(--pink);color:var(--pink)}
+  .pnav a.r{border-color:var(--indigo);color:var(--indigo)}
+  .pnav a:hover{transform:scale(1.18)}
+  .pnav a.m:hover{box-shadow:0 0 14px var(--magenta)}
+  .pnav a.d:hover{box-shadow:0 0 14px var(--pink)}
+  .pnav a.r:hover{box-shadow:0 0 14px var(--indigo)}
+  /* flash the targeted card */
+  .paper:target{animation:flash 1.4s ease-out}
+  @keyframes flash{0%{box-shadow:0 0 0 3px var(--cyan)}100%{box-shadow:0 0 0 0 transparent}}
+  @media(max-width:980px){.pnav{flex-direction:row;top:auto;bottom:14px;right:50%;
+    transform:translateX(50%)}.pnav .lbl{display:none}
+    .pnav a{width:38px;height:38px;font-size:16px}}
+</style>
+</head>
+<body>
+
+<!-- floating paper quick-nav -->
+<nav class="pnav" aria-label="Jump to paper">
+  <span class="lbl">PAPERS</span>
+  <a class="m" href="#paper-a" title="A — Illusion of Diminishing Returns">A</a>
+  <a class="m" href="#paper-b" title="B — HORIZON">B</a>
+  <a class="d" href="#paper-d" title="D — Nautilus Compass">D</a>
+  <a class="d" href="#paper-e" title="E — DiverseAgentEntropy">E</a>
+  <a class="r" href="#paper-i" title="I — Decomposing LLM Self-Correction">I</a>
+  <a class="r" href="#paper-k" title="K — Find vs Fix">K</a>
+</nav>
+
+<header class="hero">
+  <div class="kicker">LITERATURE REVIEW · LONG-HORIZON LLM AGENTS</div>
+  <h1>Six Papers, One Empty Seat</h1>
+  <div class="sub">Detecting agent drift early — and measuring what early warning is worth</div>
+  <div class="pills">
+    <span class="pill m">MEASURE</span><span class="arrow">→</span>
+    <span class="pill d">DETECT</span><span class="arrow">→</span>
+    <span class="pill r">REPAIR</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ============ 1. RESEARCH QUESTIONS ============ -->
+<section>
+  <h2 class="sec">Section 1 <small>My Research Questions</small></h2>
+
+  <p class="editnote" style="margin-top:0;margin-bottom:6px">★ Ordered by my work priority: <b>RQ2 → RQ4 → RQ1 → RQ3</b> (numbers unchanged).</p>
+
+  <div class="rq d">
+    <div class="tag">RQ2</div>
+    <div>
+      <div class="thread">DETECT &nbsp;·&nbsp; <span style="color:var(--cyan)">priority 1</span></div>
+      <div class="q">Using only API-visible (black-box) signals, can an agent raise an alarm that it has drifted off-task <b>before</b> the visible failure — and how early (lead time)?</div>
+      <div class="src">from the gaps of papers D · E</div>
+    </div>
+  </div>
+
+  <div class="rq" style="border-color:var(--cyan)">
+    <div class="tag" style="color:var(--cyan)">RQ4</div>
+    <div>
+      <div class="thread" style="color:var(--cyan)">SCRUB REPAIR &nbsp;·&nbsp; <span style="color:var(--cyan)">priority 2</span></div>
+      <div class="q">When repairing mid-run, does <b>erasing the contaminating step from the context</b> (scrub + regenerate) reverse self-conditioning better than leaving it in and appending a correction on top?</div>
+      <div class="src">the <b>scrub</b> — Paper A's error-injection run <i>backwards</i>: delete the poison vs correct over it. Directly targets A's finding that visible errors keep poisoning. (Refines RQ3's repair step.)</div>
+    </div>
+  </div>
+
+  <div class="rq m">
+    <div class="tag">RQ1</div>
+    <div>
+      <div class="thread">MEASURE &nbsp;·&nbsp; <span style="color:var(--cyan)">priority 3</span></div>
+      <div class="q">As a task gets longer, does the per-step error rate stay constant (linear drift) or accelerate (exponential drift)?</div>
+      <div class="src">from the gaps of papers A · B</div>
+    </div>
+  </div>
+
+  <div class="rq r">
+    <div class="tag">RQ3</div>
+    <div>
+      <div class="thread">REPAIR &nbsp;·&nbsp; <span style="color:var(--cyan)">priority 4</span></div>
+      <div class="q">When a live early alarm triggers a repair <b>during</b> the run, does the agent actually recover — <b>with</b> a label/verifier <i>and</i> <b>without</b> one (intrinsic) — and does <b>more lead time mean more recovery</b>? (i.e. is an early alarm a working substitute for a post-mortem oracle pointer?)</div>
+      <div class="src">from the gaps of papers I · K &nbsp;—&nbsp; <i>new angle: prior work repaired post-mortem; I test whether a live, early alarm <b>prevents</b> failure</i></div>
+    </div>
+  </div>
+
+  <p class="editnote">↻ These will expand or change as the project sharpens — this section is the living part of the document.</p>
+</section>
+
+<!-- ============ 2. THE STORY ============ -->
+<section>
+  <h2 class="sec">Section 2 <small>The Argument in Five Lines</small></h2>
+  <div class="story">
+    <p>Long agent runs fail because a tiny <b>early</b> mistake snowballs through the rest of the run. <span style="color:var(--muted)">(Papers A, B)</span></p>
+    <p>People <b>can</b> detect drift — but only <i>after</i> it is already happening, or only on single standalone questions, never per-step inside a run. <span style="color:var(--muted)">(Papers D, E)</span></p>
+    <p>Repair <b>works</b> when given an accurate pointer — but every test did it <i>post-mortem</i>, <b>after the run already failed</b>; a wrong pointer is worse than silence. <span style="color:var(--muted)">(Papers I, K)</span></p>
+    <p class="punch">Nobody fires an early alarm <i>during</i> the run to <b>prevent</b> the failure — or measures whether firing earlier saves more runs.</p>
+    <p class="punch">And nobody has measured whether that early alarm actually helps the agent <b>recover</b> — neither <i>with</i> a label/verifier nor <i>without</i> one (intrinsic).</p>
+    <p>That is my project: <b>detect drift early → measure lead time → fire a live alarm and test recovery both with and without a verifier, before the run is lost.</b></p>
+  </div>
+</section>
+
+<!-- ============ 3. THE PAPERS ============ -->
+<section>
+  <h2 class="sec">Section 3 <small>The Six Papers We Read</small></h2>
+
+  <!-- RQ1 group -->
+  <div class="rqgroup">
+    <div class="lbl" style="color:var(--magenta)">— RQ1 · MEASURE —</div>
+
+    <div class="paper m" id="paper-a">
+      <div class="top"><span class="letter">A</span>
+        <div class="name">The Illusion of Diminishing Returns: Measuring Long-Horizon Execution in LLMs</div>
+        <div class="venue">ICLR 2026 · arXiv 2509.09677</div></div>
+      <div class="one">Per-step error <b>rises</b> as a run grows — the model imitates its own past mistakes (<b>self-conditioning</b>). Failure is execution, not reasoning.</div>
+      <div class="zones">
+        <div class="zone mo"><h4>MODELS (per experiment)</h4><ul>
+          <li><b>1 · Illusion / horizon:</b> full suite — GPT-5, Claude-4-Sonnet, Grok 4, Gemini-2.5-Pro, Kimi K2, Qwen3-235B, DeepSeek-R1</li>
+          <li><b>2 · Execution not reasoning:</b> Qwen3 + Gemma3 only</li>
+          <li><b>3 · Self-conditioning:</b> Qwen3, Gemma3 (+ Kimi-K2, DeepSeek-V3)</li></ul></div>
+        <div class="zone be"><h4>BENCHMARK / DATA</h4><ul>
+          <li><b>Dictionary-Sum</b> — synthetic; free labels every step</li>
+          <li>Data <span class="ok">✓</span> + task generator <span class="ok">✓</span> + <b>fake-history injection code ✓</b></li>
+          <li><a href="https://github.com/long-horizon-execution/measuring-execution" target="_blank">github.com/long-horizon-execution/measuring-execution</a></li>
+          <li><a href="https://huggingface.co/datasets/arvindh75/Long-Horizon-Execution" target="_blank">HF: arvindh75/Long-Horizon-Execution</a></li></ul></div>
+        <div class="zone ga"><h4>THE GAP</h4><ul>
+          <li>Only <b>measures</b> drift — passive, after the run</li>
+          <li>Never raises a <b>live alarm</b> or intervenes → my RQ2/RQ3</li>
+          <li><span style="color:var(--muted)">(sterile lab = the trade-off that gives free labels, not a flaw)</span></li></ul></div>
+        <div class="zone us"><h4>WHAT I USE</h4><ul>
+          <li><b>The lab</b> + free per-step labels</li>
+          <li><b>Scrub repair</b>: their injection run <i>backwards</i> — erase the poison vs correct over it (RQ3/RQ4)</li></ul></div>
+      </div>
+    </div>
+
+    <div class="paper m" id="paper-b">
+      <div class="top"><span class="letter">B</span>
+        <div class="name">HORIZON — The Long-Horizon Task Mirage? Diagnosing Where and Why Agentic Systems Break</div>
+        <div class="venue">arXiv 2604.11978 · Apr 2026 · Berkeley / UW-Madison</div></div>
+      <div class="one">Stretch the same task to controlled lengths in 4 real worlds: agents fall off a <b>cliff</b>, and long runs die of a different disease — forgetting + error snowballing.</div>
+      <div class="zones">
+        <div class="zone mo"><h4>MODELS</h4><ul>
+          <li>GPT-5 · GPT-5-mini</li><li>Claude-4-Sonnet</li>
+          <li>3,100+ trajectories</li><li>Drift <b>not solved by scale</b></li></ul></div>
+        <div class="zone be"><h4>BENCHMARK / DATA</h4><ul>
+          <li><b>HORIZON</b> — ~700 tasks, 4 worlds (web · OS · robot · SQL)</li>
+          <li>Data <span class="no">NOT released ✗</span> — leaderboard only</li>
+          <li><a href="https://xwang2775.github.io/horizon-leaderboard" target="_blank">xwang2775.github.io/horizon-leaderboard</a></li></ul></div>
+        <div class="zone ga"><h4>THE GAP</h4><ul>
+          <li><b>Autopsy only</b>: WHY a run died, never WHEN</li>
+          <li>Rescue window observed — never measured or tested</li></ul></div>
+        <div class="zone us"><h4>WHAT I USE</h4><ul>
+          <li>Vocabulary: <b>"History Error Accumulation"</b></li>
+          <li>Judge recipe (κ=0.84)</li><li>Quote: scale moves the cliff</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RQ2 group -->
+  <div class="rqgroup">
+    <div class="lbl" style="color:var(--pink)">— RQ2 · DETECT —</div>
+
+    <div class="paper d" id="paper-d">
+      <div class="top"><span class="letter">D</span>
+        <div class="name">Nautilus Compass — Black-box Persona Drift Detection for Production LLM Agents</div>
+        <div class="venue">arXiv 2605.09863 · 2026 · black-box drift detection</div></div>
+      <div class="one">Drift <b>can</b> be detected from outputs alone — embed the session, compare to goal phrasings: <b>AUROC 0.83</b> on real agent traces.</div>
+      <div class="zones">
+        <div class="zone mo"><h4>MODELS</h4><ul>
+          <li>Real Claude-Code traces</li><li>Labels: Gemini-Flash judge</li>
+          <li>Model-agnostic, passive</li></ul></div>
+        <div class="zone be"><h4>BENCHMARK / DATA</h4><ul>
+          <li><b>Own drift test set</b> — real traces labeled drift/no-drift</li>
+          <li>Code + data <span class="ok">MIT ✓</span> · AUROC 0.83 = the bar</li>
+          <li><a href="https://github.com/chunxiaoxx/nautilus-compass" target="_blank">github.com/chunxiaoxx/nautilus-compass</a></li></ul></div>
+        <div class="zone ga"><h4>THE GAP</h4><ul>
+          <li><i>"does not forecast drift; detects in real-time"</i></li>
+          <li><b>Zero lead time</b></li><li>Misses on-topic errors</li></ul></div>
+        <div class="zone us"><h4>WHAT I USE</h4><ul>
+          <li>The baseline signal to beat</li>
+          <li>Their traces = my validation set</li><li>The quotable gap</li></ul></div>
+      </div>
+    </div>
+
+    <div class="paper d" id="paper-e">
+      <div class="top"><span class="letter">E</span>
+        <div class="name">DiverseAgentEntropy — Rethinking LLM Uncertainty: A Multi-Agent Approach to Estimating Black-Box Model Uncertainty</div>
+        <div class="venue">EMNLP 2025 Findings · arXiv 2412.09572 · Amazon Science</div></div>
+      <div class="one">Ask the same question 5 <b>different</b> ways — leftover disagreement reveals the model is guessing. Consistency beats self-consistency.</div>
+      <div class="zones">
+        <div class="zone mo"><h4>MODELS</h4><ul>
+          <li>Claude-3-Sonnet</li><li>Llama-3-70B-Instruct</li>
+          <li>(only 2, 2024-era)</li><li>AUROC 0.73–0.95</li></ul></div>
+        <div class="zone be"><h4>BENCHMARK / DATA</h4><ul>
+          <li>Single-turn QA: PopQA · TruthfulQA · FreshQA</li>
+          <li>Code <span class="ok">Apache 2.0 ✓</span> · data = wrong shape (no steps)</li>
+          <li><a href="https://github.com/amazon-science/DiverseAgentEntropy" target="_blank">github.com/amazon-science/DiverseAgentEntropy</a></li></ul></div>
+        <div class="zone ga"><h4>THE GAP</h4><ul>
+          <li><b>Single questions only</b> — no trajectories</li>
+          <li>Blind to confident-wrong (misconceptions 0.62)</li></ul></div>
+        <div class="zone us"><h4>WHAT I USE</h4><ul>
+          <li><b>Ask-twice probe</b>, moved inside a running agent</li>
+          <li>Harvest their prompts + entropy-scoring code</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RQ3 group -->
+  <div class="rqgroup">
+    <div class="lbl" style="color:var(--indigo)">— RQ3 · REPAIR —</div>
+
+    <div class="paper r" id="paper-i">
+      <div class="top"><span class="letter">I</span>
+        <div class="name">Decomposing LLM Self-Correction: The Accuracy-Correction Paradox and the Error Depth Hypothesis</div>
+        <div class="venue">arXiv 2601.00828 · 2026 · Univ. of Birmingham</div></div>
+      <div class="one">Self-correction = three separate skills — <b>detect → localize → correct</b> — and they don't move together: one model detects 10% yet fixes 61%.</div>
+      <div class="zones">
+        <div class="zone mo"><h4>MODELS</h4><ul>
+          <li>GPT-3.5-Turbo</li><li>DeepSeek-Chat</li>
+          <li>Claude-3-Haiku</li><li>(small 2024, n=3)</li></ul></div>
+        <div class="zone be"><h4>BENCHMARK / DATA</h4><ul>
+          <li><b>GSM8K-Complex</b> — GSM8K filtered to hard; 346 errors</li>
+          <li><b>Code only <span class="ok">✓</span> — NO data released:</b> the 346 errors + hint/no-hint/iterative records are generated locally (results/ is git-ignored)</li>
+          <li><a href="https://github.com/Kevin0304-li/llm-self-correction" target="_blank">github.com/Kevin0304-li/llm-self-correction</a> <span style="color:var(--muted)">(verified live)</span></li>
+          <li>Raw GSM8K: <a href="https://huggingface.co/datasets/openai/gsm8k" target="_blank">huggingface.co/datasets/openai/gsm8k</a> → apply their filter + rerun prompts to rebuild</li></ul></div>
+        <div class="zone ga"><h4>THE GAP</h4><ul>
+          <li>One-shot math QA — <b>never inside an agent</b></li>
+          <li>Own wrong location-guesses HURT repair (2/3)</li></ul></div>
+        <div class="zone us"><h4>WHAT I USE</h4><ul>
+          <li>Report repair as <b>3 numbers</b>, not one</li>
+          <li>Over-correction guard</li><li>Noticing ≠ fixing → RQ2</li></ul></div>
+      </div>
+    </div>
+
+    <div class="paper r" id="paper-k">
+      <div class="top"><span class="letter">K</span>
+        <div class="name">Find-vs-Fix — LLMs Cannot Find Reasoning Errors, but Can Correct Them Given the Error Location</div>
+        <div class="venue">ACL 2024 Findings · arXiv 2311.08516 · Google / Cambridge</div></div>
+      <div class="one">Models <b>find</b> their error step only ~53% of the time — but given the true location, backtracking repair gains <b>+18…+44 points</b>.</div>
+      <div class="zones">
+        <div class="zone mo"><h4>MODELS</h4><ul>
+          <li>Traces: PaLM 2</li><li>Finders: GPT-4 (52.9%),</li>
+          <li>GPT-4-Turbo, GPT-3.5, Gemini Pro</li></ul></div>
+        <div class="zone be"><h4>BENCHMARK / DATA</h4><ul>
+          <li><b>BIG-Bench Mistake</b> — 2,186 traces, GOLD first-error-step labels</li>
+          <li><span class="ok">Apache 2.0 ✓</span> + prompts (detector not released)</li>
+          <li><a href="https://github.com/WHGTyen/BIG-Bench-Mistake" target="_blank">github.com/WHGTyen/BIG-Bench-Mistake</a></li></ul></div>
+        <div class="zone ga"><h4>THE GAP</h4><ul>
+          <li>Pointer = <b>post-mortem oracle</b>, given after the run ended</li>
+          <li>Recovery vs earliness never measured</li></ul></div>
+        <div class="zone us"><h4>WHAT I USE</h4><ul>
+          <li><b>Backtracking</b> = my repair (alarm replaces oracle)</li>
+          <li>Target: ~60–70% detector accuracy suffices</li>
+          <li><b>Their data = offline test bed:</b> 2,186 traces with <b>human gold error-step labels</b> → replay prefixes, check my signal rises <i>before</i> the gold step = lead time vs ground truth</li>
+          <li><span style="color:var(--muted)">caveat: frozen traces → only <b>passive</b> signals; active probes (scrub / ask-twice) need live runs in A's lab</span></li></ul></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+</div>
+</body>
+</html>

@@ -1,0 +1,472 @@
+=====================================================================
+ AGENT RESEARCH PROJECT — SESSION SUMMARY + FULL IDEA LIST
+ (Paste this back to Claude next time, or just say
+  "continue the agent research project")
+=====================================================================
+
+CONTEXT:
+I'm an AI engineer (~10 yrs exp) doing scientific research on
+autonomous LLM agents. I need to bring 3 ideas to my professor to
+pick one.
+
+MY CONSTRAINTS:
+Solo researcher, API-only budget (no GPUs / no model training), must
+be finishable in a semester. I prefer cheap measurement / comparison /
+refutation studies, not building frameworks.
+
+=====================================================================
+ >>> MY CHOSEN IDEAS (FAVORITES) <<<
+=====================================================================
+*** #16  Is agent error drift over long tasks linear or exponential?
+         (measurement — safest, guaranteed result)
+
+*** #18  Can an agent detect its own drift BEFORE it fails,
+         using only self-monitoring?
+
+*** #4   Can agents self-correct WITHOUT external feedback,
+         or only when a verifier is present?
+
+These form ONE arc: Detect -> Diagnose -> Repair.
+They share ONE long-horizon agent harness (ALFWorld / WebArena +
+a ReAct agent, logging every step). #16 is the insurance result;
+#18 and #4 ride the same data.
+
+=====================================================================
+ >>> CLAUDE'S TOP-3 RECOMMENDED (best risk-spread for me) <<<
+=====================================================================
+>>> #1   How much benchmark score is just memorization?
+         (perturb tasks: rename vars, reorder steps, paraphrase;
+          measure score collapse) — lowest risk
+>>> #7   Does multi-agent debate beat a single agent at the SAME
+         total token budget? — refutation, high interest
+>>> #17  Does re-grounding (re-injecting the goal every N steps)
+         beat a bigger context window at equal cost? — intervention
+
+=====================================================================
+ FULL MENU — ALL IDEAS DISCUSSED (for final decision)
+ (* = my pick   > = Claude recommended)
+=====================================================================
+
+1. LONG-HORIZON RELIABILITY & ERROR COMPOUNDING
+ * #16  Is per-step error rate constant or accelerating with task
+        length (linear vs exponential drift)?
+   #17> Re-grounding every N steps vs a bigger context window, at
+        equal cost?
+ * #18  Can an agent detect it has drifted off-task before failing
+        (self-monitoring)?
+   #21  Does checkpoint + rollback beat linear retry on long tasks?
+   #22  How does success scale with horizon length across model
+        sizes — is there a "horizon cliff"?
+
+2. SELF-CORRECTION & VERIFICATION
+ * #4   Can agents self-correct WITHOUT external feedback, or only
+        with a verifier/oracle?
+   #5   Does self-correction ever make CORRECT answers wrong
+        (over-correction rate)?
+   #6   Separate critic agent vs same model self-checking, at equal
+        cost?
+   #23  Code agents: running tests as feedback vs LLM self-review?
+   #24  Does prompt framing ("what's wrong?" vs "is this correct?")
+        change correction quality?
+
+3. MULTI-AGENT SYSTEMS
+   #7 > Multi-agent debate vs single agent at the SAME token budget?
+   #8   Role specialization (planner/critic/executor) vs one
+        generalist at equal compute?
+   #9   Where do diminishing returns kick in as agents are added?
+   #25  Does agent diversity (different models/prompts) matter more
+        than agent count?
+   #26  Do multi-agent systems amplify or cancel hallucinations?
+
+4. MEMORY & STATE ACROSS SESSIONS
+   #27  Retrieval vs summarization vs no memory on multi-session
+        tasks, controlled for cost?
+   #28  Optimal forgetting policy — does active discarding help?
+   #29  Does storing FAILURES help more than storing successes?
+   #30  Episodic vs semantic memory structuring — better retrieval?
+
+5. PLANNING VS REACTIVE
+   #31  When does plan-then-execute beat reactive (ReAct)? Is there
+        a horizon threshold?
+   #32  Does re-planning mid-task beat committing to the first plan?
+   #33  Does forcing an explicit plan HURT on simple tasks?
+
+6. TOOL USE & GROUNDING
+   #13  How does tool-selection accuracy degrade as tool count grows
+        (10 -> 50 -> 200)?
+   #14  Retrieving a relevant tool subset first vs exposing all tools?
+   #15  Do agents recover from tool errors or cascade into failure?
+   #34  Usage examples per tool vs descriptions only?
+   #35  Can agents compose tools they've never seen combined?
+
+7. COST / QUALITY / LATENCY TRADEOFFS
+   #10  Cheap model + verification vs expensive model alone, at equal
+        cost?
+   #11  Does "think longer" keep helping per token, or plateau?
+   #12  Can a per-step model router match always-large at lower cost?
+   #36  Accuracy-per-dollar Pareto frontier across model size /
+        self-consistency N / agent count?
+
+8. EVALUATION & BENCHMARKS
+   #1 > How much benchmark score is brittle memorization
+        (perturbation study)?
+   #2   Are agent benchmarks contaminated (pre- vs post-cutoff tasks)?
+   #3   Does LLM-as-judge agree with human judgment on trajectories?
+   #37  Does task order / phrasing change reported scores
+        (reproducibility audit)?
+   #38  Metric for trajectory quality — right answers for wrong
+        reasons?
+
+9. SAFETY / ROBUSTNESS
+   #19  Prompt injection via tool outputs / retrieved web content —
+        attack success rate?
+   #20  Do agents respect a hard constraint ("never delete files")
+        under goal pressure?
+   #39  Do agents follow harmful instructions hidden in web pages?
+   #40  Does a guard step before tool execution reduce unsafe actions?
+   #41  Do agents know when to STOP and ask vs act on ambiguity?
+
+10. REASONING BEHAVIOR (analysis-flavored)
+   #42  Is stated reasoning the real cause of the action, or post-hoc
+        rationalization (faithfulness)?
+   #43  Does longer chain-of-thought correlate with correctness or
+        just confidence?
+   #44  Do agents show sunk-cost behavior (persist on a failing plan)?
+
+=====================================================================
+ KEY ADVICE
+=====================================================================
+- Build the agent harness FIRST (prove the pipeline runs + logs).
+- Start with #16 — it cannot fail to produce a result.
+- Log everything from day one (prompts, responses, tokens, per-step
+  success).
+- Put a HARD budget cap in code (kill-switch on spend).
+- Define "step" and "off-task" precisely before running anything.
+- Debug on a cheap model, then one final run on a strong model.
+
+QUESTIONS TO ASK THE PROFESSOR:
+1. Do we have compute / API budget, or is it on me?
+2. Is a measurement / refutation paper publishable in our target venue?
+
+FILES (all now inside Desktop\ai\ folder):
+- Presentation: ai\Agent_Research_Proposal_PowerPoint.pptx
+- This summary:  ai\Agent_Research_Summary_remember.txt
+- Refs/BibTeX:   ai\agent_research_refs_papers_details.bib
+- Reading guide: ai\reading_cheatsheet_easy_link.md
+
+=====================================================================
+ >>> SESSION UPDATE — 2026-06-02 (literature search done) <<<
+=====================================================================
+WHERE I AM NOW:
+- Confirmed the project = ONE arc: Detect -> Diagnose -> Repair,
+  built from my 3 chosen ideas #16 (measure), #18 (detect), #4 (repair).
+- Claude searched the literature (Google Scholar was CAPTCHA-blocked,
+  so used web search + arXiv API instead) and found 13 key papers.
+
+NEW FILES CREATED (in Desktop\ai\):
+- agent_research_refs_papers_details.bib -> 13-paper BibTeX (for WRITING)
+- reading_cheatsheet_easy_link.md -> per-paper: title + Google Scholar
+  link + a "GRAB:" line = the ONE thing to take from each paper (READING).
+
+THE 3 ANCHOR PAPERS (read these first, properly):
+  #16 -> "The Illusion of Diminishing Returns: Measuring Long Horizon
+          Execution in LLMs" (arXiv 2509.09677) — error growth is
+          EXPONENTIAL, per-step error RISES (self-conditioning). API-only.
+  #4  -> "Large Language Models Cannot Self-Correct Reasoning Yet"
+          (arXiv 2310.01798) — intrinsic self-correction fails/degrades.
+  #4  -> "When Can LLMs Actually Correct Their Own Mistakes? A Critical
+          Survey" (Kamoi, TACL 2024, arXiv 2406.01297) — read the taxonomy.
+THEN SKIM: SELFDOUBT (2604.06389, best API-only detector lead for #18)
+          and METR (2503.14499, intro motivation).
+
+MY READING METHOD (per paper, ~10 min):
+  Abstract -> Intro contributions + page-1 figure -> Limitations
+  -> Conclusion -> check "API-only? yes/no". Ignore proofs/math/
+  hyperparameters/related-work/appendix. For each paper hunt only for
+  its "GRAB" target, then close it.
+
+NEXT DECISION (unlocks everything):
+  After reading the 3 anchors, pick the ONE thread that excites me most
+  — Measure (#16), Detect (#18), or Repair (#4) — then Claude helps
+  build the concrete experiment plan for the professor.
+
+TODO maybe: add classics Reflexion (Shinn et al.) and Self-Refine
+  (Madaan et al.) to the .bib — relevant to #4 and #18.
+=====================================================================
+
+=====================================================================
+ >>> SESSION UPDATE — 2026-06-03 (understood HOW agents work) <<<
+=====================================================================
+WHAT WE DID:
+- Stepped back from papers and built up, from scratch, a deep + plain
+  understanding of HOW an LLM agent actually works — tokens up to a
+  full bug-fix loop. Full explainer saved separately:
+     -> ai\how_agents_work_explained.md   (READ THIS to refresh)
+
+THE 4 TRUTHS (the whole machine):
+  1. The LLM only WRITES TEXT. "Thought"/"Action" = highest-probability
+     next words (tokens -> probabilities -> pick -> repeat).
+  2. "Your code" (the program around the LLM, e.g. Claude Code itself)
+     is the HANDS — it reads the text and actually runs Read/Edit/Bash.
+  3. The TRANSCRIPT is the only memory (LLM forgets between steps;
+     re-send the whole transcript every step).
+  4. The OBSERVATION is the eyes — paste each result back so the agent
+     can see what happened and adjust. This feedback = looks intelligent.
+
+THE LOOP (1 pass): SEND transcript -> LLM writes Thought+Action ->
+  PARSE action -> DO it (real tool) -> OBSERVE (paste result back) ->
+  REPEAT until finish().
+
+WHY IT "KNOWS" TO OPEN THE FILE: a hidden system prompt ("read before
+  editing" + tool list) + training habits make "Read(file)" the
+  highest-probability first action. Changing the system prompt changes
+  the behavior -> THIS is the API-only experiment lever.
+
+WHAT I BUILD PER IDEA (see how_agents_work_explained.md for detail):
+  PART 0 (shared, build once): the loop + an environment + logging
+    every step + a budget kill-switch. ~60% of all 3 ideas.
+  #16 MEASURE adds: a "judge" (label each step right/wrong) + run many
+    task lengths + plot error-rate vs step-number (straight=linear,
+    bending up=exponential). Lowest risk, can't fail.
+  #18 DETECT adds: a self-monitor prompt each step ("still on task?
+    confidence 0-1") + mark the TRUE failure step + check if the alarm
+    fires BEFORE failure. One extra LLM call/step.
+  #4  REPAIR adds: a critique+redo step + a VERIFIER TOGGLE (feedback
+    ON=show test/error vs OFF=hide it) + compare recovery rates +
+    over-correction rate. A code agent gives a FREE verifier: run_tests().
+
+AGREED PLAN: build PART 0 + #16 first (insurance + shared data), then
+  go deep on ONE of #18 or #4 (pick after reading the 3 anchors).
+
+NEXT: pick the ONE deep thread -> I turn it into a week-by-week build
+  plan (what file to write, what to run) for the professor.
+=====================================================================
+
+=====================================================================
+ >>> SESSION UPDATE — 2026-06-03b (FRESH 2025/2026 lit re-search) <<<
+=====================================================================
+Re-did the literature search for NEW papers (2025+) that talk DEEPLY
+about the 3 ideas. Saved to: ai\reading_cheatsheet_2025_fresh.md
+(each paper: GRAB + "LOOK FOR" exact section + API-only tag).
+
+Best 6 to read first (verified abstracts marked):
+  #16: A=Illusion of Diminishing Returns (2509.09677, anchor) +
+       B=Long-Horizon Task Mirage / HORIZON benchmark (2604.11978) 🔑
+       -> horizon as controlled variable + LLM-as-judge step labeling.
+  #18: D=Nautilus Compass black-box drift detection (2605.09863) 🔑 +
+       E=DiverseAgentEntropy multi-agent black-box uncertainty (2412.09572)
+       -> both API-only alarm signals you can copy.
+  #4:  I=Decomposing Self-Correction: Accuracy-Correction Paradox +
+       Error Depth (2601.00828) 🔑 + K=LLMs Cannot Find Reasoning Errors
+       but Can Correct Given Location (2311.08516)
+       -> over-correction measure + proof that FINDING (not fixing) is
+          the bottleneck = justifies the Detect->Repair arc.
+Key insight: paper K shows the bottleneck is DETECTING the error, not
+  fixing it -> #18 (detect) and #4 (repair) are two halves of one story.
+=====================================================================
+
+=====================================================================
+ >>> SESSION UPDATE — 2026-06-04 (methods digest + professor pitch) <<<
+=====================================================================
+- Too busy to read papers -> Claude pulled the METHODS from each paper
+  (mechanism + evaluation) into: ai\methods_and_evaluation.md
+- Built THE PITCH: ai\professor_proposal_3_ideas.md
+  (each idea = QUESTION -> MECHANISM -> EVALUATION -> RISK, + framing
+  + why-these-3-together + questions for the professor).
+- Key correction: 2310.01798's finding is NEGATIVE (no-oracle
+  self-correction HURTS) — never state it backwards.
+=====================================================================
+
+=====================================================================
+ >>> SESSION UPDATES — 2026-06-05/06 (ALL 6 PRIORITY PAPERS DONE) <<<
+=====================================================================
+Read + deep-discussed + summarized 6 papers (A, D, I, E, K, B) into
+NEW FOLDER ai\papers-summary\ (each paper gets Paper_X_*.md and most
+get GAPS_Paper_X_*.md — gap files NAMED BY SOURCE PAPER):
+  A = Illusion of Diminishing Returns (ICLR 2026!) — the LAB: Dictionary
+      Sum task + generator, self-conditioning (model imitates its own
+      visible errors), thinking models IMMUNE -> use non-thinking models.
+      HF dataset: arvindh75/Long-Horizon-Execution.
+  D = Nautilus Compass — the COMPETITOR: black-box drift detect,
+      0.83 AUROC, but quote: "does not forecast drift; detects in
+      real-time" -> my seat. Code MIT.
+  I = Decomposing Self-Correction (2601.00828) — detect/localize/correct
+      are DECOUPLED skills; fixing works without noticing (Haiku 10%
+      detect -> 61% fix); n=3 OLD models, no universal law.
+  E = DiverseAgentEntropy (EMNLP 2025) — ask-twice/consistency signal;
+      "consistency detects UNCERTAINTY, not FALSEHOOD" (confident-wrong
+      blind spot); never run per-step -> my GAP 1.
+  K = Find-vs-Fix (ACL 2024) — GPT-4 only 53% at FINDING the error step;
+      backtracking with TRUE location = +18..+44 pts; ~60-70% detector
+      accuracy already profitable. BIG-Bench-Mistake = offline validation
+      bed with GOLD labels. "They detect and correct AFTER the complete
+      failure" (my line).
+  B = HORIZON / Task Mirage (2604.11978) — CLIFF not slope; long runs
+      die of History Error Accumulation (= official name for my drift);
+      killer errors arise EARLY, "recoverable -> irreversible" window
+      (OBSERVED, not proved — no intervention).
+I-vs-K resolution: accurate pointer helps, wrong pointer worse than
+  silence -> #18 prices #4. Three-paper pattern: D = real-time-not-
+  forecast, E = single-questions-no-steps, K = post-mortem -> ONE EMPTY
+  SEAT = LEAD TIME = (true failure step) - (first alarm step).
+MY GAP (#18 direction locked): early-warning + lead-time metric. No
+  standard benchmark for agent drift detection exists.
+3 candidate detect signals: ask-twice (E), SCRUB PROBE (novel, from A:
+  rerun next step WITH vs WITHOUT last step; divergence = contamination
+  = alarm), entropy+anchor (D). Which fires earliest IS the experiment.
+=====================================================================
+
+=====================================================================
+ >>> SESSION UPDATE — 2026-06-07 (PRESENTING TOMORROW 06-08) <<<
+=====================================================================
+REPAIR MECHANISM (#4) LOCKED: ALARM-TRIGGERED BACKTRACKING + SCRUB:
+  alarm at step k -> roll back -> ERASE poisoned step(s) from transcript
+  (maybe a few steps before the visible error = rollback-depth knob) ->
+  regenerate forced-different (K's recipe) -> continue.
+  4 conditions: no-repair / alarm->backtrack / +verifier (ceiling) /
+  random-step rollback (control). Money plot: recovery vs LEAD TIME.
+  Symmetry to pitch: scrub-as-PROBE (#18) and scrub-as-REPAIR (#4) =
+  ONE mechanism, both halves of the arc.
+PRESENTATION BUILT (v3): ai\presentation\Agent_Research_Papers_Review.pptx
+  regenerated from ai\presentation\build_deck.py (python-pptx; no
+  PowerPoint on machine -> I am the eyes). Neurix dark theme (purple/
+  pink/cyan on #030014). 13 slides: title "Six Papers, One Empty Seat" ->
+  MY 3 RESEARCH QUESTIONS (each tagged with source-paper gaps) ->
+  reading map -> 6 paper slides (one-liner + MODELS/GAP/I-USE boxes) ->
+  comparison table -> lead-time timeline -> gaps->RQs -> the ask
+  ("The hands already work. The eyes arrive too late.").
+OPEN DECISION (ask me first when we resume): RQ3 wording — keep my
+  original "intrinsic vs verifier", keep Claude's "early alarm enough
+  to save the run", or merge ("repair without oracle — is an early
+  alarm a good-enough substitute?").
+STILL OWED: cross-paper "what we USE from each" table (~1h, do before
+  more polish); rewrite Paper_A file (ICLR/HF/thinking-immunity);
+  revise Paper_D + Paper_I files with corrections; add "does not
+  forecast" quote to GAPS_Paper_D. Optional defense insurance: skim
+  paper C = AgentRx (2602.02475) — nearest neighbor to my claim.
+AFTER PRESENTATION: Phase-0 build plan (generate tasks -> non-thinking
+  model -> live per-step logging incl. active probes -> auto-label
+  failure step -> rewind & hunt -> score lead time).
+=====================================================================
+
+=====================================================================
+ >>> SESSION UPDATE — 2026-06-07b (cross-paper table DONE) <<<
+=====================================================================
+- Re-explained Paper B gaps in plain language (delivery-driver story:
+  cliff = routes fail suddenly past a length; inside = tiny EARLY
+  mistake snowballs; gap = they only do autopsies, no alarm; me = the
+  alarm + lead time). GAP 3 = "one plot, three claims": smooth drift
+  signal rising BEFORE the success cliff on the SAME runs ->
+  (a) reconciles A's slope with B's cliff, (b) explains B's headline,
+  (c) proves early warning possible. THE money plot.
+- DATA REALITY CHECK: Paper B has NO usable dataset (leaderboard site
+  only) — never claim "I'll use HORIZON's data". Paper A HAS HF dataset
+  arvindh75/Long-Horizon-Execution. Ready-made labeled set = K's
+  BIG-Bench-Mistake. Develop on A, validate on K + D's traces.
+- DONE (was owed): cross-paper "what I USE from each" table ->
+  ai\papers-summary\CROSS_PAPER_what_I_use_table.md
+  Roles: A=LAB, B=VOCABULARY, D=COMPETITOR/baseline-to-beat (0.83),
+  E=COMPETITOR/ask-twice probe, I=METRICS (3-way readout),
+  K=REPAIR mechanism + gold data + 60-70%% threshold.
+- Presentation paper ORDER (from build_deck.py): A -> B (RQ1 MEASURE),
+  D -> E (RQ2 DETECT), I -> K (RQ3 REPAIR); evidence/gap slide after
+  each pair; then comparison table -> lead-time timeline -> gaps->RQs
+  -> the ask.
+- STILL OWED: Paper_A rewrite, Paper_D + Paper_I revisions, "does not
+  forecast" quote into GAPS_Paper_D, RQ3 wording decision (ASK FIRST).
+- DECK v4: every paper slide now has FOUR zones (was 3):
+  MODELS | THEIR BENCHMARK | THE GAP | WHAT I USE (each 2.89in,
+  text 12.5pt). Benchmark zone = dataset + can-I-download verdict:
+  A=Dictionary-Sum+HF✓, B=HORIZON data NOT released✗, D=drift traces
+  MIT✓ (0.83=bar), E=QA sets wrong shape (code✓), I=GSM8K-Complex
+  rebuildable✓, K=BIG-Bench-Mistake GOLD labels✓. Rebuilt OK.
+  ⚠️ Not visually checked (no PowerPoint on machine) — USER must open
+  the pptx and check the 4 columns don't overflow before presenting.
+=====================================================================
+
+=====================================================================
+ >>> SESSION UPDATE — 2026-06-08 (presentation moved; RQ3 REPLACED) <<<
+=====================================================================
+- Presentation date pushed back -> no deadline pressure. New mode:
+  re-read papers deeply, extract MECHANISMS + BENCHMARKS/DATA i can
+  use, and mine MORE research questions (parking lot, keep separate).
+- NEW LIVING ARTIFACT (replaces the pptx as the main doc):
+  ai\research_overview.html -- self-contained HTML: RQs at top /
+  5-line story / 6 paper cards (MODELS·BENCHMARK·GAP·WHAT-I-USE).
+- *** RQ3 OLD WORDING WAS NOT USEFUL -> REPLACED ***
+  I (the user) spotted that the old RQ3 ("intrinsic vs verifier /
+  does the hint-pointer help or hurt / over-correction") was ALREADY
+  ANSWERED by papers I, K and 2310.01798 -- recycled, not novel, and
+  the "merge" added work without adding novelty. We threw it out.
+  NEW RQ3: "When a live early alarm triggers a repair DURING the run,
+  does the run actually recover -- and does MORE lead time mean MORE
+  recovery? (is an early alarm a working substitute for a post-mortem
+  oracle pointer?)" Novelty = PREVENTION, not post-mortem repair.
+  Deliverable = recovery-rate-vs-lead-time CURVE (no paper has it).
+  Old framings -> demoted to ONE related-work sentence.
+- OPEN (revisit later, not blocking): is RQ3 a true 3rd question, or
+  really the payoff half of RQ2 (detect early)? They are tightly
+  joined (RQ2 = can I detect early; RQ3 = is early detection worth it).
+- ⚠️ The pptx deck still shows the OLD RQ3 wording on slide 2 -- update
+  build_deck.py if/when the deck is used again.
+=====================================================================
+
+=====================================================================
+ >>> SESSION UPDATE — 2026-06-08b (Paper A dug deep + corrections) <<<
+=====================================================================
+Worked through Paper A (Illusion of Diminishing Returns) in detail and
+fixed several wrong/missing facts. All verified from the actual paper
+(arXiv 2509.09677 HTML) + repo, not memory.
+
+- MODELS, by their THREE experiments (now in HTML, this order):
+  1. ILLUSION / horizon headline -> full suite: GPT-5, Claude-4-Sonnet,
+     Grok 4, Gemini-2.5-Pro, Kimi K2, Qwen3-235B, DeepSeek-R1.
+  2. EXECUTION-not-reasoning -> Qwen3 + Gemma3 ONLY. Proven by DESIGN
+     (give the plan as the keys + give the dict in-context -> no
+     planning, no recall needed -> any failure = pure execution).
+  3. SELF-CONDITIONING -> Qwen3, Gemma3 (+ Kimi-K2, DeepSeek-V3).
+  -> I rebuild only 2 & 3; both run on cheap small models (Qwen3-4B /
+     Gemma3-4B). Thinking models (GPT-5/R1/Qwen3-think) are IMMUNE to
+     self-conditioning -> never use them for drift.
+
+- THINKING vs NON-THINKING roles: thinking models = the "how far can
+  they go" headline (GPT-5 = 2,176 steps); non-thinking = the mechanism
+  (self-conditioning), die at ~2 steps w/o CoT, ~15 steps before <50%
+  at simplest setting.
+
+- DATA/CODE -- CORRECTED (old notes wrongly said "recipe only, no
+  dataset"). They release EVERYTHING:
+  repo github.com/long-horizon-execution/measuring-execution =
+  (a) task generator generate_dataset_json.py, (b) the FAKE-HISTORY
+  injection code for self-conditioning (inject outputs at chosen error
+  rate 0/10/25/50%), + 100-sample starter on HF
+  arvindh75/Long-Horizon-Execution. "Contamination-free."
+  -> The "fake history" is GENERATED by their code, NOT a separate
+     downloaded dataset. Figure 5 = more injected errors -> lower
+     accuracy at turn 100 = self-conditioning isolated from context len.
+
+- SCRUB-PROBE -- what is NEW vs already-done (important pitch guard):
+  A's injection ALREADY proves "cleaner context -> less drift" (with
+  KNOWN planted errors). NOT my contribution. NEW = scrub as a TOOL on
+  UNLABELED runs: (RQ2) rerun next step WITH vs WITHOUT a suspect step,
+  divergence = that step contaminates = live alarm (= injection run
+  BACKWARDS as a detector); (RQ3) on alarm, erase poisoned step +
+  regenerate. Pitch it as "live, unlabeled detector + repair", NOT
+  "does scrubbing help".
+
+- HTML "THE GAP" for A trimmed: only real gap = "measures drift but
+  passive, no live alarm/intervention". Sterile/no-tools/no-env are NOT
+  gaps -- they're the trade-off that gives free labels (a strength).
+- RQ4 added, then CORRECTED: scrub is NOT a detector. Removing a step
+  only shows it was INFLUENTIAL, not WRONG (removing a GOOD step also
+  changes output) -> circular, can't detect with it. Scrub's real job =
+  REPAIR. RQ4 now: "When repairing mid-run, does ERASING the
+  contaminating step (scrub+regenerate) reverse self-conditioning better
+  than leaving it in and appending a correction on top?" Refines RQ3.
+  Detection signals come from D/E (anchor sim, ask-twice), NOT scrub.
+
+- All Paper A links VERIFIED live (HF dataset, the repo). Also verified
+  D=github.com/chunxiaoxx/nautilus-compass, E=github.com/amazon-science/
+  DiverseAgentEntropy, K=github.com/WHGTyen/BIG-Bench-Mistake. Paper I
+  code link still NOT captured (placeholder in HTML, needs verifying).
+=====================================================================
