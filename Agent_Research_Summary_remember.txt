@@ -470,3 +470,55 @@ fixed several wrong/missing facts. All verified from the actual paper
   DiverseAgentEntropy, K=github.com/WHGTyen/BIG-Bench-Mistake. Paper I
   code link still NOT captured (placeholder in HTML, needs verifying).
 =====================================================================
+
+=====================================================================
+ >>> SESSION UPDATE — 2026-06-27 (PROFESSOR APPROVED; NOVELTY CHECK) <<<
+=====================================================================
+WHAT HAPPENED:
+- Professor LIKED the presentation and asked me to do a PREFERENCE
+  STUDY. The chosen direction = the EARLY-ALARM idea (#18 detect):
+  "can an agent detect its own error BEFORE the final failure?"
+- Before committing, ran a DEEP prior-art sweep (17 papers fetched,
+  78 claims, 24 adversarially verified) to be sure it isn't taken.
+  Full writeup: preference_study\NOVELTY_CHECK_early_alarm_2026-06-27.md
+  (preference_study\ = NEW folder at nlp_course root for this study)
+
+>>> VERDICT: PARTIALLY TAKEN — not fully novel, but a defensible gap
+    remains. DO NOT claim "nobody has done early warning."
+
+PRINCIPAL THREAT -> SafetyDrift (arXiv:2603.27148, Mar 2026):
+  absorbing-Markov-chain monitor, "detects 94.7% of violations with
+  3.7 steps of advance warning" = BOTH my pillars (forecast-before-
+  failure + lead-time-in-steps) already in print.
+  WHY I SURVIVE (the 3-point defense): (1) it targets SAFETY/policy
+  violations, NOT general task-failure/off-task drift; (2) structured
+  Markov state model, NOT black-box API-only per-step self-monitoring;
+  (3) NO recovery-rate-vs-lead-time curve (nobody has one).
+
+OTHER CLOSE WORK:
+  - InferAct (2407.11843, EMNLP'25): preemptive but NEXT-action only,
+    no lead-time metric.
+  - Agentic Overconfidence (2602.06948): CLOSEST in spirit; asks
+    success-prob mid-run (25/50/75%). KEY NEGATIVE RESULT: mid-run
+    self-doubt is UNINFORMATIVE (fires equally for success & failure)
+    -> naive "still on track?" prompt fails -> MY scrub-probe/ask-twice
+    MUST beat this baseline. THIS is now my real scientific risk, not
+    novelty.
+  - Intervention Paradox (2602.03338): 0.94-AUROC critic -> 26pt
+    collapse when used to intervene -> proves my recovery-vs-lead-time
+    curve is a real, non-trivial contribution.
+  - NOT threats (post-hoc / white-box): HTC 2601.15778, HORIZON
+    2604.11978, entropy-shape 2603.18940, UProp 2506.17419,
+    AUQ 2601.15703, Runaway 2505.17616.
+
+DEFENSIBLE GAP (the reframed pitch): a LIVE, BLACK-BOX (API-only),
+  self-monitoring early alarm for GENERAL task-failure/off-task drift
+  (NOT safety) + a recovery-rate-vs-lead-time curve. Cite SafetyDrift
+  as nearest neighbor, then pivot on the 3 differences.
+
+CAVEAT: 2026 arXiv IDs are real but VERY fresh -> RE-RUN this sweep
+  right before submission (new papers land monthly).
+NEXT (offered): write SafetyDrift + Agentic Overconfidence summary
+  cards (papers-summary style), or draft the related-work positioning
+  paragraph for the professor.
+=====================================================================
